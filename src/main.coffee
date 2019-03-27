@@ -6,6 +6,9 @@ fs = require 'fs-extra'
 url = require 'url'
 path = require 'path'
 
+pad = (n, len) ->
+  new Array(len - n.toString().length).fill(0).join('') + n
+
 ipcMain.on 'importScript', ->
   results = dialog.showOpenDialog
     properties: ['openFile']
@@ -17,18 +20,22 @@ ipcMain.on 'importScript', ->
     output = []
     text = await fs.readFile results[0], 'utf8'
     lines = text.split /\n/g
+    i = 0
+    len = lines.length.toString().length
     for line in lines
-      line.replace /(\d+)\s+(.*)/, (all, filename, text) ->
-        if all and filename and text
-          output.push
-            filename: filename
-            text: text
-        all
+      if line and line.trim()
+        output.push
+          filename: pad ++i, len
+          text: line
     mainWindow.webContents.send 'scriptImported', output
-ipcMain.on 'selectDirectory', ->
+ipcMain.on 'selectDirectory', (win, script) ->
   results = dialog.showOpenDialog
     properties: ['openDirectory', 'createDirectory']
   if results
+    output = ''
+    for line in script
+      output += line.filename + '\t' + line.text + '\n'
+    await fs.writeFile path.join(results[0], 'index.txt'), output, 'utf8'
     mainWindow.webContents.send 'directorySelected', results[0]
 ipcMain.on 'fetchWave', (win, file) ->
   if file and file.directory and file.filename and await fs.exists path.join(file.directory, file.filename + '.wav')
