@@ -32,10 +32,6 @@ ipcMain.on 'selectDirectory', (win, script) ->
   results = dialog.showOpenDialog
     properties: ['openDirectory', 'createDirectory']
   if results
-    output = ''
-    for line in script
-      output += line.filename + '\t' + line.text + '\n'
-    await fs.writeFile path.join(results[0], 'index.txt'), output, 'utf8'
     mainWindow.webContents.send 'directorySelected', results[0]
 ipcMain.on 'fetchWave', (win, file) ->
   if file and file.directory and file.filename and await fs.exists path.join(file.directory, file.filename + '.wav')
@@ -44,6 +40,11 @@ ipcMain.on 'fetchWave', (win, file) ->
       details: file
 ipcMain.on 'rendered', (win, current) ->
   fs.writeFile path.join(current.directory, current.filename + '.wav'), Buffer new Uint8Array current.buffer
+  output = ''
+  for line in current.script
+    if await fs.exists path.join(current.directory, line.filename + '.wav')
+      output += line.filename + '\t' + line.text + '\n'
+  await fs.writeFile path.join(current.directory, 'index.txt'), output, 'utf8'
 
 mainWindow = null
 ready = ->
@@ -59,7 +60,6 @@ ready = ->
     pathname: path.join __dirname, 'index.html'
     protocol: 'file:'
     slashes: true
-  mainWindow.openDevTools()
 app.on 'ready', ready
 app.on 'window-all-closed', ->
   process.platform is 'darwin' or app.quit()

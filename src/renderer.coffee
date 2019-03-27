@@ -108,10 +108,16 @@ setupAudio = ->
         wav = toWav buffer
         current.wav = wav
         updateView()
+        output = []
+        for line in myscript
+          output.push
+            filename: line.filename
+            text: line.text
         ipcRenderer.send 'rendered', 
           directory: directory
           filename: current.filename
           buffer: Buffer.from wav
+          script: output
 
 init = ->
   devices = await navigator.mediaDevices.enumerateDevices()
