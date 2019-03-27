@@ -1,0 +1,37 @@
+html
+  head
+    link(rel='stylesheet', href='./app.css')
+  body
+    .home
+      h1 Transcriptor
+      button.import(onclick='renderer.importScript()') Import Script
+    .script
+      audio
+      .outputdir
+        label
+        button(onclick='renderer.selectDirectory()') Select
+      .inputdevice
+        label Audio Input
+        select.inputs(onchange='renderer.selectInputDevice(this.value)')
+      .main
+        .textline
+        .shuttle
+          button.recstop(onclick='renderer.recstop()') Record
+          button.play(onclick='renderer.play()') Play
+        .index
+          label Position
+          .number
+        .viz
+          canvas
+        .appcontrols
+          .backnext
+            button.back(onclick='renderer.back()') Back
+            button.next(onclick='renderer.next()') Next
+      .right
+        button.finish(onclick='renderer.finish()') Finish 
+    script.
+      window.renderer = require('./renderer');
+    svg
+      filter#myFilter
+        feTurbulence(type='turbulence', baseFrequency='0.05', numOctaves='2', result='turbulence')
+        feDisplacementMap(in2='turbulence', in='SourceGraphic', scale='7', xChannelSelector='R', yChannelSelector='G')
