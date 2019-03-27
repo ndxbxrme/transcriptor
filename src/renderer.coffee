@@ -153,7 +153,7 @@ draw()
 
 module.exports =
   selectDirectory: ->
-    ipcRenderer.send 'selectDirectory'
+    ipcRenderer.send 'selectDirectory', myscript
   selectInputDevice: (val) ->
     selectedDevice = +val
     setupAudio()
