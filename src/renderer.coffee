@@ -144,7 +144,7 @@ ipcRenderer.on 'wave', (app, wav) ->
 ipcRenderer.on 'directorySelected', (app, dir) ->
   directory = dir
   updateView()
-  goTo 300
+  goTo 0
   
 draw = ->
   requestAnimationFrame draw
