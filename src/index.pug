@@ -18,15 +18,16 @@ html
         .shuttle
           button.recstop(onclick='renderer.recstop()') Record
           button.play(onclick='renderer.play()') Play
-        .index
-          label Position
-          .number
         .viz
           canvas
+          .index
+            label Position
+            .number
         .appcontrols
           .backnext
             button.back(onclick='renderer.back()') Back
             button.next(onclick='renderer.next()') Next
+            button.nextrec(onclick='render.nextAndStartRecording()') Next & Start Recording
       .right
         button.finish(onclick='renderer.finish()') Finish 
     script.

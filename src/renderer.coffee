@@ -14,6 +14,7 @@ $play = document.querySelector '.play'
 $indexnumber = document.querySelector '.index .number'
 $btnback = document.querySelector '.back'
 $btnnext = document.querySelector '.next'
+$btnnextrec = document.querySelector '.nextrec'
 $outputdir = document.querySelector '.outputdir label'
 $inputs = document.querySelector '.inputs'
 $directory = document.querySelector '.outputdir label'
@@ -34,6 +35,7 @@ wavPlayer = null
 source = null
 analyser = null
 chunks = []
+stopFn = null
 viz = null
 
 removeClass = (elem, name) ->
@@ -57,14 +59,17 @@ updateView = ->
     $recstop.disabled = playing
     $play.disabled = recording
     if not current.wav then $play.disabled = true
+    ###
     buttons = $appcontrols.querySelectorAll 'button'
     for button in buttons
       if playing or recording
         button.disabled = true
       else
         button.disabled = false
+    ###
     $btnback.disabled = true if currentIndex is 0
     $btnnext.disabled = true if currentIndex >= myscript.length - 1
+    $btnnextrec.disabled = true if currentIndex >= myscript.length - 1
   else
     addClass $script, 'hidden'
     removeClass $home, 'hidden'
@@ -118,6 +123,7 @@ setupAudio = ->
           filename: current.filename
           buffer: Buffer.from wav
           script: output
+        stopFn?()
 
 init = ->
   devices = await navigator.mediaDevices.enumerateDevices()
@@ -129,13 +135,27 @@ init = ->
   renderDevices()
   setupAudio()
 init()
+
+waitForRender = ->
+  new Promise (resolve) ->
+    stopFn = ->
+      resolve()
+      stopFn = null
     
-goTo = (index) ->
+goTo = (index, autostart) ->
+  if recording
+    recording = false
+    mediaRecorder.stop()
+    await waitForRender()
   current = myscript[index]
   currentIndex = index
   ipcRenderer.send 'fetchWave',
     directory: directory
     filename: current.filename
+  if autostart
+    recording = true
+    chunks = []
+    mediaRecorder.start()
   updateView()
 
 ipcRenderer.on 'scriptImported', (app, scr) ->
@@ -194,7 +214,13 @@ module.exports =
     goTo currentIndex - 1
   next: ->
     goTo currentIndex + 1
+  nextAndStartRecording: ->
+    goTo currentIndex + 1, true
   finish: ->
+    if recording
+      recording = false
+      mediaRecorder.stop()
+      await waitForRender()
     myscript = []
     directory = null
     recording = false

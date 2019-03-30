@@ -52,6 +52,8 @@ body, html
       flex-direction column
       button
         padding 1rem
+        font-size 2rem
+        margin .3rem
       .textline
         font-size 2rem
         flex 1
@@ -60,22 +62,33 @@ body, html
         align-items center
       .shuttle, .backnext
         display flex
-        justify-content space-between
-      .index
-        text-align center
-        label
-          font-size .6rem
-          color #aaa
-        .number
-          font-size 1.6rem
-          margin-bottom .3rem
+        justify-content center
       .viz
         display flex
         justify-content center
+        position relative
+        height 4rem
         canvas
           border-radius .5rem
           border 1px solid #444
           filter blur(1px)
+        .index
+          text-align center
+          position absolute
+          top 0
+          left 0
+          width 100%
+          height 100%
+          display flex
+          flex-direction column
+          justify-content center
+          align-items center
+          label
+            font-size .6rem
+            color #aaa
+          .number
+            font-size 1.6rem
+            margin-bottom .3rem
       .appcontrols
         margin-top .3rem
     .right
