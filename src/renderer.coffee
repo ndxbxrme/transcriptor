@@ -67,9 +67,9 @@ updateView = ->
       else
         button.disabled = false
     ###
-    $btnback.disabled = true if currentIndex is 0
-    $btnnext.disabled = true if currentIndex >= myscript.length - 1
-    $btnnextrec.disabled = true if currentIndex >= myscript.length - 1
+    $btnback.disabled = currentIndex is 0
+    $btnnext.disabled = currentIndex >= myscript.length - 1
+    $btnnextrec.disabled = currentIndex >= myscript.length - 1
   else
     addClass $script, 'hidden'
     removeClass $home, 'hidden'
