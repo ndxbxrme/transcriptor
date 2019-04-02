@@ -10,6 +10,7 @@ $shuttle = document.querySelector '.shuttle'
 $index = document.querySelector '.index'
 $appcontrols = document.querySelector '.appcontrols'
 $recstop = document.querySelector '.recstop'
+$retry = document.querySelector '.retry'
 $play = document.querySelector '.play'
 $indexnumber = document.querySelector '.index .number'
 $btnback = document.querySelector '.back'
@@ -57,6 +58,7 @@ updateView = ->
     $textline.innerHTML = current.text if current.text
     $indexnumber.innerHTML = current.filename + ' / ' + last.filename if current.filename
     $recstop.disabled = playing
+    $retry.disabled = not recording
     $play.disabled = recording
     if not current.wav then $play.disabled = true
     ###
@@ -195,6 +197,18 @@ module.exports =
       chunks = []
       mediaRecorder.start()
     updateView()
+  retry: ->
+    if recording
+      recording = false
+      updateView()
+      mediaRecorder.stop()
+      await waitForRender()
+      setTimeout ->
+        recording = true
+        chunks = []
+        mediaRecorder.start()
+        updateView()
+      , 100
   play: ->
     if playing
       playing = false
@@ -221,11 +235,13 @@ module.exports =
       recording = false
       mediaRecorder.stop()
       await waitForRender()
-    myscript = []
-    directory = null
-    recording = false
-    playing = false
-    currentIndex = 0
-    current = {}
-    last = {}
-    updateView()
+      updateView()
+    if confirm 'Are you sure?'
+      myscript = []
+      directory = null
+      recording = false
+      playing = false
+      currentIndex = 0
+      current = {}
+      last = {}
+      updateView()
