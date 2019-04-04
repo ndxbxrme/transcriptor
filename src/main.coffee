@@ -5,6 +5,7 @@
 fs = require 'fs-extra'
 url = require 'url'
 path = require 'path'
+glob = require 'glob'
 
 pad = (n, len) ->
   new Array(len - n.toString().length).fill(0).join('') + n
@@ -32,7 +33,11 @@ ipcMain.on 'selectDirectory', (win, script) ->
   results = dialog.showOpenDialog
     properties: ['openDirectory', 'createDirectory']
   if results
-    mainWindow.webContents.send 'directorySelected', results[0]
+    glob path.join(results[0], '*.wav'), (err, files) ->
+      prependStr = files[0].substr(files[0].lastIndexOf('/') + 1).replace /\d+\.wav$/, ''
+      mainWindow.webContents.send 'directorySelected', 
+        dir: results[0]
+        prependStr: prependStr
 ipcMain.on 'fetchWave', (win, file) ->
   if file and file.directory and file.filename and await fs.exists path.join(file.directory, file.filename + '.wav')
     mainWindow.webContents.send 'wave',

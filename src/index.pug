@@ -10,9 +10,13 @@ html
       .outputdir
         label
         button(onclick='renderer.selectDirectory()') Select
-      .inputdevice
-        label Audio Input
-        select.inputs(onchange='renderer.selectInputDevice(this.value)')
+      .input-boxes
+        .prepend
+          label Prepend string
+          input.prependStr(onchange='renderer.setPrependString(this.value)')
+        .inputdevice
+          label Audio Input
+          select.inputs(onchange='renderer.selectInputDevice(this.value)')
       .main
         .textline
         .shuttle

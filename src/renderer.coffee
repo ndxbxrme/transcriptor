@@ -20,9 +20,11 @@ $outputdir = document.querySelector '.outputdir label'
 $inputs = document.querySelector '.inputs'
 $directory = document.querySelector '.outputdir label'
 $main = document.querySelector '.main'
+$prependStr = document.querySelector 'input.prependStr'
 
 myscript = []
 directory = null
+prependStr = ''
 recording = false
 playing = false
 currentIndex = 0
@@ -52,6 +54,8 @@ updateView = ->
     removeClass $script, 'hidden'
     addClass $home, 'hidden'
     $directory.innerHTML = if directory then directory else 'Please select a folder...'
+    $prependStr.value = prependStr
+    $prependStr.disabled = recording
     if directory then removeClass($main, 'disabled') else addClass($main, 'disabled')
     $recstop.innerHTML = if recording then 'Stop' else 'Record'
     $play.innerHTML = if playing then 'Stop' else 'Play'
@@ -118,11 +122,11 @@ setupAudio = ->
         output = []
         for line in myscript
           output.push
-            filename: line.filename
+            filename: prependStr + line.filename
             text: line.text
         ipcRenderer.send 'rendered', 
           directory: directory
-          filename: current.filename
+          filename: prependStr + current.filename
           buffer: Buffer.from wav
           script: output
         stopFn?()
@@ -153,7 +157,7 @@ goTo = (index, autostart) ->
   currentIndex = index
   ipcRenderer.send 'fetchWave',
     directory: directory
-    filename: current.filename
+    filename: prependStr + current.filename
   if autostart
     recording = true
     chunks = []
@@ -169,8 +173,9 @@ ipcRenderer.on 'wave', (app, wav) ->
   current.wav = wav.response.buffer
   updateView()
   
-ipcRenderer.on 'directorySelected', (app, dir) ->
-  directory = dir
+ipcRenderer.on 'directorySelected', (app, obj) ->
+  directory = obj.dir
+  prependStr = obj.prependStr
   updateView()
   goTo 0
   
@@ -185,6 +190,8 @@ module.exports =
   selectInputDevice: (val) ->
     selectedDevice = +val
     setupAudio()
+  setPrependString: (str) ->
+    prependStr = str
   importScript: ->
     ipcRenderer.send 'importScript'
   recstop: ->

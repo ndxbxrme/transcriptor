@@ -1,6 +1,6 @@
 {
   "name": "transcriptor",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "transcriptor",
   "main": "app/main.js",
   "scripts": {
@@ -36,6 +36,7 @@
     "audiobuffer-to-wav": "^1.0.0",
     "electron-updater": "^4.0.6",
     "fs-extra": "^7.0.1",
+    "glob": "^7.1.3",
     "xhr": "^2.5.0"
   }
 }
