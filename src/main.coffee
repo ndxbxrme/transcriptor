@@ -34,7 +34,9 @@ ipcMain.on 'selectDirectory', (win, script) ->
     properties: ['openDirectory', 'createDirectory']
   if results
     glob path.join(results[0], '*.wav'), (err, files) ->
-      prependStr = files[0].substr(files[0].lastIndexOf('/') + 1).replace /\d+\.wav$/, ''
+      prependStr = ''
+      if files and files.length
+        prependStr = files[0].substr(files[0].lastIndexOf('/') + 1).replace /\d+\.wav$/, ''
       mainWindow.webContents.send 'directorySelected', 
         dir: results[0]
         prependStr: prependStr

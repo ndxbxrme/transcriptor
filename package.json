@@ -1,6 +1,6 @@
 {
   "name": "transcriptor",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "transcriptor",
   "main": "app/main.js",
   "scripts": {
